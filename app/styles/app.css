@@ -1,0 +1,34 @@
+.app {
+  display: flex;
+  height: 100px;
+  width: 250px;
+}
+
+.sidebar {
+  background-color: goldenrod;
+  width: 100px;
+  white-space: nowrap;
+}
+
+.min-and-max {
+  min-width: 50px;
+  max-width: 200px;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+
+.content {
+  background-color: maroon;
+  color: white;
+  flex: 1;
+}
+
+.overflow-y-scroll {
+  overflow-y: scroll;
+}
+
+.resize-horizontal {
+  resize: horizontal;
+}

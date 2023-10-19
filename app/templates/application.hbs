@@ -1,7 +1,228 @@
 {{page-title "EmberCssResizable"}}
 
-{{!-- The following component displays Ember's default welcome message. --}}
-<WelcomePage />
-{{!-- Feel free to remove this! --}}
+<h1>Resizable CSS Sidebars in Ember</h1>
+
+<p>
+  HTML and CSS comes with resizablity build in. How
+  can we use this in an app layout?
+</p>
+
+<ul class="tags">
+  <li>ember</li>
+  <li>ember-modifier</li>
+  <li>@ember/render-modifiers</li>
+  <li>localStorage</li>
+  <li>css.resize</li>
+</ul>
+
+<div class="app">
+  <div class="sidebar">
+    This is resizable content
+  </div>
+  <div class="content">
+    this is the main body content
+  </div>
+</div>
+
+<p>
+  This is a great start. Each of those areas should be a scrollable list.
+</p>
+
+<div class="app">
+  <div class="sidebar overflow-x-hidden overflow-y-scroll">
+    <ul>
+      <li>Alpha</li>
+      <li>Beta</li>
+      <li>Delta</li>
+      <li>Gamma</li>
+      <li>Theta</li>
+      <li>Eta</li>
+    </ul>
+  </div>
+  <div class="content overflow-y-scroll">
+    <p>this is the main body content</p>
+    <p>these are the first Greek letters</p>
+    <p>aren't you impressed I knew them without looking them up</p>
+    <p>I never took any Greek classes</p>
+    <p>quite a few math classes though</p>
+  </div>
+</div>
+
+<p>
+  Now we can add a horizontal css resize and see how it behaves.
+</p>
+
+<div class="app">
+  <div class="sidebar resize-horizontal overflow-x-hidden overflow-y-scroll">
+    <label for="sidebar-search"></label>
+    <input id="sidebar-search" type="search" placeholder="Search">
+
+    <ul>
+      <li>Alpha</li>
+      <li>Beta</li>
+      <li>Delta</li>
+      <li>Gamma</li>
+      <li>Theta</li>
+      <li>Eta</li>
+    </ul>
+  </div>
+  <div class="content overflow-y-scroll">
+    <p>this is the main body content</p>
+    <p>these are the first Greek letters</p>
+    <p>aren't you impressed I knew them without looking them up</p>
+    <p>I never took any Greek classes</p>
+    <p>quite a few math classes though</p>
+  </div>
+</div>
+
+<p>
+  While the intital width is set, it can be closed or opened as much as the user wants.
+  This can have bounds set using min-width and max-width;
+</p>
+
+<div class="app">
+  <div class="sidebar min-and-max resize-horizontal overflow-x-hidden overflow-y-scroll">
+    <label for="sidebar-search"></label>
+    <input id="sidebar-search" type="search" placeholder="Search">
+
+    <ul>
+      <li>Alpha</li>
+      <li>Beta</li>
+      <li>Delta</li>
+      <li>Gamma</li>
+      <li>Theta</li>
+      <li>Eta</li>
+    </ul>
+  </div>
+  <div class="content overflow-y-scroll">
+    <p>this is the main body content</p>
+    <p>these are the first Greek letters</p>
+    <p>aren't you impressed I knew them without looking them up</p>
+    <p>I never took any Greek classes</p>
+    <p>quite a few math classes though</p>
+  </div>
+</div>
+
+<p>
+The downside to this is that it is not persistent across page
+reloads. Let's use a modifier to observe resizes. Looking around the emberverse, I found
+https://github.com/alexlafroscia/ember-resize-observer-modifier/blob/master/addon/modifiers/observe-resize.js
+which uses an outdated modifier syntax. I'll use that code for inspiration.
+</p>
+
+<pre>
+ember install ember-modifier
+ember g modifier observer-resize
+</pre>
+
+
+<pre>
+Controller's Sidebar Width: {{this.loggedWidth}}
+</pre>
+
+<div class="app">
+  <div class="sidebar min-and-max resize-horizontal overflow-x-hidden overflow-y-scroll" {{observe-resize this.logSidebarResized}}>
+    <label for="sidebar-search"></label>
+    <input id="sidebar-search" type="search" placeholder="Search">
+
+    <ul>
+      <li>Alpha</li>
+      <li>Beta</li>
+      <li>Delta</li>
+      <li>Gamma</li>
+      <li>Theta</li>
+      <li>Eta</li>
+    </ul>
+  </div>
+  <div class="content overflow-y-scroll">
+    <p>this is the main body content</p>
+    <p>these are the first Greek letters</p>
+    <p>aren't you impressed I knew them without looking them up</p>
+    <p>I never took any Greek classes</p>
+    <p>quite a few math classes though</p>
+  </div>
+</div>
+
+<p>
+  There's some cool things happening above. While our CSS
+  is still setting the boundaries with min-width and max-width,
+  our JS has access to the current variable. If we set the width
+  value in JS outside of the min and max, the min and max win.
+  This separation of concerns allow CSS and JS to each play
+  their parts harmoniously.
+</p>
+
+<p>
+  The next step is to hook it up to localstorage for persistence.
+</p>
+
+<pre>
+Controller's Sidebar Width: {{this.localStorageWidth}}
+
+localStorage Sidebar Width: {{this.persistedLocalStorageWidth}}
+</pre>
+
+<div class="app">
+  <div class="sidebar min-and-max resize-horizontal overflow-x-hidden overflow-y-scroll" {{observe-resize this.persistSidebarResized}}>
+    <label for="sidebar-search"></label>
+    <input id="sidebar-search" type="search" placeholder="Search">
+
+    <ul>
+      <li>Alpha</li>
+      <li>Beta</li>
+      <li>Delta</li>
+      <li>Gamma</li>
+      <li>Theta</li>
+      <li>Eta</li>
+    </ul>
+  </div>
+  <div class="content overflow-y-scroll">
+    <p>this is the main body content</p>
+    <p>these are the first Greek letters</p>
+    <p>aren't you impressed I knew them without looking them up</p>
+    <p>I never took any Greek classes</p>
+    <p>quite a few math classes though</p>
+  </div>
+</div>
+
+<p>
+  The last step is restore the localstorage value on initial render.
+  This is easiest with ember-render-modifiers
+</p>
+
+<pre>
+ember install @ember/render-modifiers
+</pre>
+
+<pre>
+Controller's Sidebar Width: {{this.localStorageWidth}}
+
+localStorage Sidebar Width: {{this.persistedLocalStorageWidth}}
+</pre>
+
+<div class="app">
+  <div class="sidebar min-and-max resize-horizontal overflow-x-hidden overflow-y-scroll"
+       {{observe-resize this.persistSidebarResized}}
+       {{did-insert this.restoreLocalStorageWidth}}>
+    <label for="sidebar-search"></label>
+    <input id="sidebar-search" type="search" placeholder="Search">
+
+    <ul>
+      <li>Alpha</li>
+      <li>Beta</li>
+      <li>Delta</li>
+      <li>Gamma</li>
+      <li>Theta</li>
+      <li>Eta</li>
+    </ul>
+  </div>
+  <div class="content overflow-y-scroll">
+    <p>this is the main body content</p>
+    <p>these are the first Greek letters</p>
+    <p>aren't you impressed I knew them without looking them up</p>
+    <p>I never took any Greek classes</p>
+    <p>quite a few math classes though</p>
+  </div>
+</div>
 
 {{outlet}}
