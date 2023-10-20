@@ -9,8 +9,11 @@ const observerMap = new WeakMap();
 
 export default modifier(function observeResize(
   element,
-  [changeHandler] /*, positional, named*/
+  [changeHandler, initializeFn] /*, positional, named*/
 ) {
+  if (initializeFn) {
+    initializeFn(element);
+  }
   let observer;
 
   if (observerMap.has(changeHandler)) {

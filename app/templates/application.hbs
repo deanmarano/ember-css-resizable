@@ -153,7 +153,7 @@ Controller's Sidebar Width: {{this.loggedWidth}}
 </p>
 
 <p>
-  The next step is to hook it up to localstorage for persistence.
+  The next step is to store the width in localStorage.
 </p>
 
 <pre>
@@ -187,26 +187,19 @@ localStorage Sidebar Width: {{this.persistedLocalStorageWidth}}
 
 <p>
   The last step is restore the localstorage value on initial render.
-  This is easiest with ember-render-modifiers
+  This can be accomplished by extending our modifier
 </p>
 
 <pre>
-ember install @ember/render-modifiers
-</pre>
+unified Controller's Sidebar Width: {{this.unifiedLocalStorageWidth}}
 
-<pre>
-Controller's Sidebar Width: {{this.localStorageWidth}}
-
-localStorage Sidebar Width: {{this.persistedLocalStorageWidth}}
+unified localStorage Sidebar Width: {{this.persistedUnifiedLocalStorageWidth}}
 </pre>
 
 <div class="app">
   <div class="sidebar min-and-max resize-horizontal overflow-x-hidden overflow-y-scroll"
-       {{observe-resize this.persistSidebarResized}}
-       {{did-insert this.restoreLocalStorageWidth}}>
+       {{observe-resize this.persistUnifiedSidebarResized this.restoreUnifiedLocalStorageWidth}}>
     <label for="sidebar-search"></label>
-    <input id="sidebar-search" type="search" placeholder="Search">
-
     <ul>
       <li>Alpha</li>
       <li>Beta</li>
@@ -224,5 +217,3 @@ localStorage Sidebar Width: {{this.persistedLocalStorageWidth}}
     <p>quite a few math classes though</p>
   </div>
 </div>
-
-{{outlet}}
